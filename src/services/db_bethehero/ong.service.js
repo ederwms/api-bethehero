@@ -27,7 +27,7 @@ const findForAuthentication = async (id) => {
   )
 
   if (!ong) {
-    throw new Error('Não foi possível autenticar.')
+    throw new Error('Nenhuma ONG encontrada com este ID.')
   } else {
     return ong
   }
@@ -39,7 +39,7 @@ const create = async ({ name, email, whatsapp, city, uf }) => {
     [ name ]
   )
 
-  if (ongAlreadyExists) {
+  if (ongAlreadyExists.length > 0) {
     throw new Error('Já existe uma ONG cadastrada com este nome.')
   } else {
     const id = crypto.randomBytes(4).toString('HEX')
@@ -49,7 +49,7 @@ const create = async ({ name, email, whatsapp, city, uf }) => {
       [id, name, email, whatsapp, city, uf]
     )
 
-    const newOng = await db.query(
+    const newOng = await db.queryFirstOrDefault(
       `SELECT * FROM ongs WHERE name = ?`,
       [ name ]
     )

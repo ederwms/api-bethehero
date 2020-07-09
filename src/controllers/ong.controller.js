@@ -15,6 +15,7 @@ const createOng = async (req, res) => {
 
   ongService.create({ name, email, whatsapp, city, uf })
     .then((response) => {
+
       return res.status(201).json({
         message: 'ONG cadastrada com sucesso!',
         id: response.idong
