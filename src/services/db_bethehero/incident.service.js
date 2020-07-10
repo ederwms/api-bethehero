@@ -7,27 +7,37 @@ const index = async () => {
 }
 
 const create = async ({ title, description, value, idong }) => {
-  const incident = await db.query(
-    `INSERT INTO incidents (title, description, value, ongs_idong) VALUES (?, ?, ?, ?)`,
-    [title, description, value, idong]
-  )
+  if (!title) {
+    throw new Error('É obrigatório informar o título do caso.')
+  } else if (!description) {
+    throw new Error('É obrigatório informar a descrição do caso.')
+  } else if (!value) {
+    throw new Error('É obrigatório informar o valor do caso.')
+  } else if (!idong) {
+    throw new Error('Não foi possível adicionar o caso.')
+  } else {
+    const incident = await db.query(
+      `INSERT INTO incidents (title, description, value, idong) VALUES (?, ?, ?, ?)`,
+      [title, description, value, idong]
+    )
 
-  const createdIncident = await db.queryFirstOrDefault(
-    `SELECT * FROM incidents AS i INNER JOIN ongs AS o ON i.ongs_idong = o.idong WHERE idincident = ?`,
-    [incident.insertId]
-  )
+    const createdIncident = await db.queryFirstOrDefault(
+      `SELECT * FROM incidents AS i INNER JOIN ongs AS o ON i.idong = o.idong WHERE idincident = ?`,
+      [incident.insertId]
+    )
 
-  return {
-    idincident: createdIncident.idincident,
-    title: createdIncident.title,
-    description: createdIncident.description,
-    ong: {
-      idong: createdIncident.idong,
-      name: createdIncident.name,
-      email: createdIncident.email,
-      whatsapp: createdIncident.whatsapp,
-      city: createdIncident.city,
-      uf: createdIncident.uf
+    return {
+      idincident: createdIncident.idincident,
+      title: createdIncident.title,
+      description: createdIncident.description,
+      ong: {
+        idong: createdIncident.idong,
+        name: createdIncident.name,
+        email: createdIncident.email,
+        whatsapp: createdIncident.whatsapp,
+        city: createdIncident.city,
+        uf: createdIncident.uf
+      }
     }
   }
 }
