@@ -11,6 +11,7 @@ const IncidentController = require('../../controllers/incident.controller')
 
 // Rotas de sessão
 routes.post(`/api/${version}/session`, SessionController.authenticate)
+routes.post(`/api/${version}/revalidate`, SessionController.revalidateForAuthentication)
 
 // Rotas de ONG
 routes.get(`/api/${version}/ongs`, OngController.getOngs)
