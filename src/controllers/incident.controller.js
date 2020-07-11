@@ -1,7 +1,18 @@
 const incidentService = require('../services/db_bethehero/incident.service')
+const jwt = require('jsonwebtoken')
 
 const getAllIncidents = (req, res) => {
-  incidentService.index()
+  const authHeader = req.headers.authorization
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Token not provided' })
+  }
+
+  const [, token] = authHeader.split(' ')
+  const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+  const { idong } = decoded
+
+  incidentService.index(idong)
     .then((response) => {
       return res.status(200).json({ results: response })
     })

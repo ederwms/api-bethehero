@@ -1,7 +1,7 @@
 const db = require('./_access')
 
-const index = async () => {
-  const incidents = await db.query(`SELECT * FROM incidents`)
+const index = async (idong) => {
+  const incidents = await db.query(`SELECT * FROM incidents WHERE idong = '${idong}'`)
 
   return incidents
 }
