@@ -22,8 +22,9 @@ const getAllIncidents = (req, res) => {
 }
 
 const createIncident = (req, res) => {
-  const { title, description, value, idong } = req.body
-  incidentService.create({ title, description, value, idong })
+  const { title, description, value, idong, idfile } = req.body
+
+  incidentService.create({ title, description, value, idong, idfile })
     .then((response) => {
       return res.status(201).json({
         message: 'Caso cadastrado com sucesso!',
