@@ -3,10 +3,31 @@ const fileService = require('./file.service')
 
 const index = async (idong) => {
   const incidents = await db.query(
-    `SELECT * FROM incidents AS i INNER JOIN files AS f ON i.idfile = f.idfile WHERE idong = '${idong}';`
+    `SELECT * FROM incidents AS i LEFT JOIN files AS f ON i.idfile = f.idfile WHERE idong = '${idong}';`
   )
 
-  return incidents
+  var results = []
+
+  for (let i = 0; i < incidents.length; i++) {
+    const incidentFile = {
+      idfile: incidents[i].idfile,
+      filename: incidents[i].filename,
+      filesize: incidents[i].filesize,
+      filekey: incidents[i].filekey,
+      fileurl: incidents[i].fileurl
+    }
+
+    results.push({
+      idincident: incidents[i].idincident,
+      title: incidents[i].title,
+      description: incidents[i].description,
+      value: incidents[i].value,
+      idong: incidents[i].idong,
+      file: incidents[i].idfile !== null ? incidentFile : null
+    })
+  }
+
+  return results
 }
 
 const create = async ({ title, description, value, idong, idfile }) => {
