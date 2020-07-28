@@ -1,12 +1,36 @@
 const db = require('./_access')
+const fileService = require('./file.service')
 
 const index = async (idong) => {
-  const incidents = await db.query(`SELECT * FROM incidents WHERE idong = '${idong}'`)
+  const incidents = await db.query(
+    `SELECT * FROM incidents AS i LEFT JOIN files AS f ON i.idfile = f.idfile WHERE idong = '${idong}';`
+  )
 
-  return incidents
+  var results = []
+
+  for (let i = 0; i < incidents.length; i++) {
+    const incidentFile = {
+      idfile: incidents[i].idfile,
+      filename: incidents[i].filename,
+      filesize: incidents[i].filesize,
+      filekey: incidents[i].filekey,
+      fileurl: incidents[i].fileurl
+    }
+
+    results.push({
+      idincident: incidents[i].idincident,
+      title: incidents[i].title,
+      description: incidents[i].description,
+      value: incidents[i].value,
+      idong: incidents[i].idong,
+      file: incidents[i].idfile !== null ? incidentFile : null
+    })
+  }
+
+  return results
 }
 
-const create = async ({ title, description, value, idong }) => {
+const create = async ({ title, description, value, idong, idfile }) => {
   if (!title) {
     throw new Error('É obrigatório informar o título do caso.')
   } else if (!description) {
@@ -17,19 +41,36 @@ const create = async ({ title, description, value, idong }) => {
     throw new Error('Não foi possível adicionar o caso.')
   } else {
     const incident = await db.query(
-      `INSERT INTO incidents (title, description, value, idong) VALUES (?, ?, ?, ?)`,
-      [title, description, value, idong]
+      `INSERT INTO incidents (title, description, value, idong, idfile) VALUES (?, ?, ?, ?, ?)`,
+      [title, description, value, idong, idfile]
     )
 
     const createdIncident = await db.queryFirstOrDefault(
-      `SELECT * FROM incidents AS i INNER JOIN ongs AS o ON i.idong = o.idong WHERE idincident = ?`,
+      `
+        SELECT
+        *
+        FROM
+        incidents AS i
+        INNER JOIN ongs AS o ON i.idong = o.idong
+        ${idfile !== null ? 'INNER JOIN files AS f ON f.idfile = i.idfile' : ''}
+        WHERE idincident = ?
+      `,
       [incident.insertId]
     )
+
+    var image = {
+      id: createdIncident.idfile,
+      name: createdIncident.filename,
+      size: createdIncident.filesize,
+      key: createdIncident.filekey,
+      url: createdIncident.fileurl
+    }
 
     return {
       idincident: createdIncident.idincident,
       title: createdIncident.title,
       description: createdIncident.description,
+      file: idfile !== null ? image : null,
       ong: {
         idong: createdIncident.idong,
         name: createdIncident.name,
@@ -71,7 +112,7 @@ const updateById = async ({ id, title, description, value }) => {
 
 const deleteById = async (id) => {
   const incidentExists = await db.queryFirstOrDefault(
-    `SELECT * FROM incidents WHERE idincident = ?`,
+    `SELECT * FROM incidents i WHERE idincident = ?`,
     [id]
   )
 
@@ -84,10 +125,14 @@ const deleteById = async (id) => {
         [id]
       )
 
+      if (incidentExists.idfile) {
+        await fileService.deleteById(incidentExists.idfile)
+      }
+
       if (deletedIncident.affectedRows > 0) {
         return { message: 'Caso excluído com sucesso!' }
       } else {
-        throw new Error('Não foi possível excluir o registro')
+        throw new Error('Não foi possível excluir o caso.')
       }
     } catch (e) {
       throw e
