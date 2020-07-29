@@ -8,9 +8,13 @@ Este projeto é uma API REST construída para a aplicação [BeTheHero](https://
 
 **Tecnologias utilizadas**
 - NodeJS
-- MySQL
+- ExpressJS
+- Nodemon
+- Banco de dados MySQL
 
+<!--
 > Obs.: documentação em progresso
+-->
 
 **Aplicação disponível em:** https://betheherovue.netlify.app/
 
