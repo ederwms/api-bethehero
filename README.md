@@ -4,7 +4,7 @@
 
 # Be The Hero - API
 
-Este projeto é uma API REST construída para a aplicação [BeTheHero](https://github.com/ederwms/bethehero-vue) desenvolvida utilizando VueJS.
+Este projeto é uma API REST construída para a aplicação [BeTheHero](https://github.com/ederwms/bethehero-vue), foi desenvolvida utilizando NodeJS.
 
 **Tecnologias utilizadas**
 - NodeJS
