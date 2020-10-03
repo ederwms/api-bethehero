@@ -10,7 +10,12 @@ const routes = require('./routes/v1')
 
 app.use(morgan('dev'))
 
-app.use(cors())
+const corsOptions = {
+  origin: 'https://betheherovue.netlify.app',
+  optionsSuccessStatus: 200
+}
+
+app.use(process.env.NODE_ENV === 'production' ? cors(corsOptions) : cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
