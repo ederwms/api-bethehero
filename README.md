@@ -16,7 +16,7 @@ Este projeto é uma API REST construída para a aplicação [BeTheHero](https://
 > Obs.: documentação em progresso
 -->
 
-**Aplicação disponível em:** https://betheherovue.netlify.app/
+<!-- **Aplicação disponível em:** https://betheherovue.netlify.app/ -->
 
 **&copy;** [Rocketseat](https://rocketseat.com.br/)
 
